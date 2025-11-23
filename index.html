@@ -1,0 +1,443 @@
+<!doctype html>
+<html lang="hu">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Elosztó - Main</title>
+  <!-- Ikonok (Font Awesome) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <style>
+    /* Alap tipográfia és háttér – erős Frutiger Aero + Vista/XP hangulat */
+    :root{
+      --glass-light: rgba(255,255,255,0.45);
+      --glass-dark: rgba(0,0,0,0.25);
+      --border-glow: rgba(255,255,255,0.55);
+      --text: #ffffff;
+      --muted: #e6f5ff;
+      --accent1: #00c6ff;
+      --accent2: #1a75ff;
+      --accent3: #00ffcc;
+      --accent4: #f59e0b;
+    }
+
+    *{ box-sizing: border-box }
+    html, body { height: 100% }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      color: var(--text);
+      /* Erős, retro, fényes háttér: kaleidoszkóp-szerű radiális + lineáris overlay */
+      background:
+        radial-gradient(1000px 600px at 10% 0%, var(--accent1), transparent 60%),
+        radial-gradient(800px 500px at 90% 10%, var(--accent3), transparent 55%),
+        radial-gradient(900px 600px at 30% 90%, var(--accent2), transparent 60%),
+        radial-gradient(700px 600px at 80% 85%, var(--accent4), transparent 60%),
+        linear-gradient(135deg, #0546b4 0%, #0a95ff 35%, #00d6ff 65%, #00ffc3 100%);
+      overflow-x: hidden;
+    }
+
+    /* Fényes átfedés csík – 2000-es évek dizájn */
+    .gloss-overlay {
+      pointer-events: none;
+      position: fixed;
+      inset: 0;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0) 40%, rgba(0,0,0,0.12) 60%, rgba(255,255,255,0.06));
+      mix-blend-mode: screen;
+      z-index: 1;
+    }
+
+    /* Tartalom elrendezés */
+    .wrap {
+      position: relative;
+      z-index: 2;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      min-height: 100vh;
+    }
+
+    /* Fejléc – üveges, fényes, Vista-s */
+    header {
+      position: sticky;
+      top: 0;
+      backdrop-filter: blur(16px) saturate(120%);
+      background: linear-gradient(180deg, var(--glass-light), var(--glass-dark));
+      border-bottom: 2px solid var(--border-glow);
+      box-shadow: 0 10px 40px rgba(0,0,0,0.45);
+    }
+
+    .header-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 18px 24px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: var(--text);
+    }
+    .brand .orb {
+      width: 30px; height: 30px; border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, #fff, #78e7ff 35%, #2ea2ff 55%, #0069ff 85%);
+      box-shadow: inset 0 6px 12px rgba(255,255,255,0.6), 0 8px 20px rgba(0,0,0,0.5);
+    }
+    .brand .name {
+      font-weight: 700;
+      letter-spacing: 0.2px;
+      text-shadow: 0 2px 6px rgba(0,0,0,0.7);
+    }
+
+    nav {
+      margin-left: auto;
+      display: flex;
+      gap: 12px;
+    }
+    nav a {
+      display: inline-flex; align-items: center; gap: 8px;
+      text-decoration: none; color: var(--text);
+      padding: 10px 18px; border-radius: 999px;
+      background: linear-gradient(180deg, #6af7e2, #1aa6ff);
+      box-shadow: inset 0 2px 8px rgba(255,255,255,0.85), 0 6px 16px rgba(0,0,0,0.5);
+      border: 1px solid rgba(255,255,255,0.6);
+      transition: transform .15s ease, box-shadow .15s ease;
+    }
+    nav a:hover {
+      transform: scale(1.08);
+      box-shadow: inset 0 2px 10px rgba(255,255,255,1), 0 10px 24px rgba(0,0,0,0.65);
+    }
+
+    /* Kereső – glossy pill, retro */
+    .search {
+      margin-left: 8px;
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 8px 14px; border-radius: 999px;
+      background: linear-gradient(180deg, #eaffff, #bfe9ff);
+      color: #0a2540;
+      border: 1px solid rgba(255,255,255,0.7);
+      box-shadow: inset 0 2px 8px rgba(255,255,255,0.9), 0 6px 16px rgba(0,0,0,0.45);
+      position: relative;
+      overflow: hidden;
+    }
+    .search input {
+      border: 0; outline: none; background: transparent;
+      color: #0a2540; font-size: 14px; width: 210px;
+    }
+    .search::before {
+      content: "";
+      position: absolute; inset: 0;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.65), transparent);
+      background-size: 200% 100%;
+      animation: glossRun 12s linear infinite;
+      pointer-events: none;
+    }
+    @keyframes glossRun {
+      from { background-position: 200% 0 }
+      to   { background-position: -200% 0 }
+    }
+
+    /* Fő tartalom */
+    main {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 32px 24px 48px;
+    }
+    .hero {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 22px;
+      margin-bottom: 28px;
+    }
+    .hero .panel {
+      position: relative;
+      padding: 18px 20px;
+      border-radius: 18px;
+      background: linear-gradient(180deg, var(--glass-light), var(--glass-dark));
+      backdrop-filter: blur(18px) saturate(120%);
+      border: 2px solid var(--border-glow);
+      box-shadow: 0 12px 36px rgba(0,0,0,0.6);
+    }
+    .panel h1 {
+      margin: 0 0 8px;
+      font-size: 28px;
+      text-shadow: 0 2px 6px rgba(0,0,0,0.7);
+    }
+    .panel p { margin: 0; color: var(--muted) }
+
+    /* Fénycsík a panelen */
+    .panel::after {
+      content: "";
+      position: absolute; left: -10%; top: 0; height: 100%; width: 30%;
+      background: linear-gradient(90deg, rgba(255,255,255,0.6), rgba(255,255,255,0));
+      transform: skewX(-15deg);
+      filter: blur(6px);
+      animation: lightSweep 8s ease-in-out infinite;
+      pointer-events: none;
+    }
+    @keyframes lightSweep {
+      0% { left: -20% } 50% { left: 70% } 100% { left: -20% }
+    }
+
+    /* „Wallpapers” rács – üveges kártyák, erős gloss, retro színek */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 18px;
+    }
+    .card {
+      position: relative;
+      border-radius: 18px;
+      overflow: hidden;
+      background: linear-gradient(180deg, var(--glass-light), var(--glass-dark));
+      border: 2px solid var(--border-glow);
+      box-shadow: 0 10px 32px rgba(0,0,0,0.55);
+      transition: transform .15s ease, box-shadow .15s ease;
+    }
+    .card:hover { transform: scale(1.03); box-shadow: 0 16px 40px rgba(0,0,0,0.7) }
+
+    /* Kártya teteje: faux wallpaper */
+    .card .preview {
+      height: 140px;
+      background:
+        radial-gradient(300px 120px at 20% 30%, #7dffe3, transparent 60%),
+        radial-gradient(220px 120px at 80% 20%, #7dbbff, transparent 55%),
+        radial-gradient(260px 150px at 60% 75%, #ffe38a, transparent 60%),
+        linear-gradient(135deg, #0a95ff, #00c6ff, #00ffcc);
+      filter: saturate(120%) contrast(105%);
+    }
+    .card .content {
+      padding: 14px 16px;
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 10px;
+    }
+    .card .title {
+      display: flex; align-items: center; gap: 8px;
+      font-weight: 600;
+      text-shadow: 0 1px 4px rgba(0,0,0,0.6);
+    }
+    .badge {
+      padding: 6px 10px; border-radius: 999px;
+      background: linear-gradient(180deg, #6af7e2, #1aa6ff);
+      color: #07233a; font-weight: 600; font-size: 12px;
+      box-shadow: inset 0 2px 8px rgba(255,255,255,0.85), 0 4px 10px rgba(0,0,0,0.4);
+      border: 1px solid rgba(255,255,255,0.7);
+    }
+
+    /* Smiley/ikonok extra retro */
+    .title .emoji {
+      filter: drop-shadow(0 2px 3px rgba(0,0,0,0.6));
+    }
+
+    /* Lábléc */
+    footer {
+      backdrop-filter: blur(16px);
+      background: linear-gradient(180deg, var(--glass-dark), rgba(0,0,0,0.35));
+      border-top: 2px solid var(--border-glow);
+      box-shadow: 0 -10px 32px rgba(0,0,0,0.5);
+    }
+    .footer-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 18px 24px;
+      text-align: center;
+      color: var(--muted);
+      text-shadow: 0 1px 3px rgba(0,0,0,0.6);
+    }
+
+    /* Apró szikrák – retro csillogás */
+    .sparkle {
+      position: absolute; width: 6px; height: 6px; border-radius: 50%;
+      background: #fff;
+      box-shadow: 0 0 10px #fff, 0 0 18px #9df3ff;
+      animation: sparkle 2.2s ease-in-out infinite;
+      pointer-events: none;
+    }
+    @keyframes sparkle {
+      0% { transform: scale(0.5); opacity: 0.25 }
+      50% { transform: scale(1.6); opacity: 1 }
+      100% { transform: scale(0.5); opacity: 0.25 }
+    }
+
+    /* Reszponzív finomhangolás */
+    @media (max-width: 840px){
+      .hero { grid-template-columns: 1fr }
+      .search input { width: 140px }
+    }
+    .grid a.card {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+}
+
+.grid a.card:visited {
+  color: inherit;   /* ne legyen lila */
+}
+
+.grid a.card:hover {
+  transform: scale(1.03);
+  box-shadow: 0 16px 40px rgba(0,0,0,0.7);
+}
+.player {
+  margin-top: 14px;
+  padding: 12px;
+  border-radius: 18px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.45), rgba(0,0,0,0.25));
+  backdrop-filter: blur(14px) saturate(120%);
+  border: 2px solid rgba(255,255,255,0.55);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+  display: inline-block;
+}
+
+/* maga az audio elem */
+.player audio {
+  width: 260px; /* állítható */
+  filter: drop-shadow(0 2px 6px rgba(0,0,0,0.6));
+  border-radius: 12px;
+}
+
+  </style>
+</head>
+<body>
+  <!-- Fényes overlay a teljes oldalra -->
+  <div class="gloss-overlay"></div>
+
+  <div class="wrap">
+    <header>
+      <div class="header-inner">
+        <a class="brand" href="#">
+          <span class="orb"></span>
+          <span class="name"><i class="fa-solid fa-star"></i> Elosztó</span>
+        </a>
+
+        <div class="search">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input type="search" placeholder="Keresés a tartalmaim között..." />
+        </div>
+
+        <nav>
+          <a href="#"><i class="fa-solid fa-house"></i> Kezdőlap</a>
+          <a href="kapcsolat.html"><i class="fa-solid fa-envelope"></i> Kapcsolat</a>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="panel">
+          <h1>Üdvözöllek a weboldalamon!</h1>
+          <p>Ez a weboldal azért készült, hogy egy elosztóként szolgáljon a további projektjeim között.</p>
+          <!-- pár szikra -->
+          <span class="sparkle" style="top: 12px; left: 18px"></span>
+          <span class="sparkle" style="bottom: 12px; right: 22px; animation-delay:.6s"></span>
+        </div>
+        <div class="panel">
+          <h1><i class="fa-regular fa-face-smile emoji"></i> Y2K</h1>
+          <p>Ikonok, smiley-k és glossy gombok: nosztalgia a 2000-es évek legjobbjaiból.</p>
+        </div>
+      </section>
+
+      <section class="grid">
+        <!-- Faux „wallpaper” kártyák – ikon + cím + badge -->
+        <a class="card" 
+   href="https://mbarnabas0529.github.io/Cheatsheet.github.io/index.html" 
+   target="_blank" 
+   rel="noopener noreferrer">
+  <div class="preview">
+    <img src="kepek/cheatsheets.png" alt="" style="width:100%; height:100%; object-fit:cover;">
+  </div>
+  <div class="content">
+    <div class="title">
+      <i class="fa-solid fa-water"></i>
+      Cheatsheets
+    </div>
+    <span class="badge">Segédlet</span>
+  </div>
+  <span class="sparkle" style="top: 10px; left: 20px"></span>
+</a>
+
+        <a class="card" 
+   href="https://mbarnabas0529.github.io/CBHS.github.io" 
+   target="_blank" 
+   rel="noopener noreferrer">
+  <div class="preview">
+    <img src="kepek/cbhs.png" alt="" style="width:100%; height:100%; object-fit:cover;">
+  </div>
+  <div class="content">
+    <div class="title">
+      <i class="fa-solid fa-water"></i>
+      Comic Book Haven Society
+    </div>
+    <span class="badge">CBHS</span>
+  </div>
+  <span class="sparkle" style="top: 10px; left: 20px"></span>
+</a>
+
+        <a class="card" 
+   href="https://mbarnabas0529.github.io/CBHS.github.io" 
+   target="_blank" 
+   rel="noopener noreferrer">
+  <div class="preview">
+    <img src="kepek/wip.avif" alt="" style="width:100%; height:100%; object-fit:cover;">
+  </div>
+  <div class="content">
+    <div class="title">
+      <i class="fa-solid fa-water"></i>
+      Work in progress
+    </div>
+    <span class="badge">CBHS</span>
+  </div>
+  <span class="sparkle" style="top: 10px; left: 20px"></span>
+</a>
+
+        <a class="card" 
+   href="https://mbarnabas0529.github.io/CBHS.github.io" 
+   target="_blank" 
+   rel="noopener noreferrer">
+  <div class="preview">
+    <img src="kepek/wip.avif" alt="" style="width:100%; height:100%; object-fit:cover;">
+  </div>
+  <div class="content">
+    <div class="title">
+      <i class="fa-solid fa-water"></i>
+      Work in progress
+    </div>
+    <span class="badge">CBHS</span>
+  </div>
+  <span class="sparkle" style="top: 10px; left: 20px"></span>
+</a>
+      </section>
+    </main>
+
+    <footer>
+  <div class="player">
+    <audio controls autoplay loop>
+      <source src="LEASE by Takeshi Abo but slightly bitcrushed for nostalgia.mp3" type="audio/mpeg">
+      A böngésződ nem támogatja a zenelejátszót.
+    </audio>
+  </div>
+</footer>
+
+  </div>
+
+  <!-- Opcionális: kereső élő szűrés a kártyák címére -->
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const input = document.querySelector(".search input");
+      const cards = Array.from(document.querySelectorAll(".card"));
+      input.addEventListener("input", () => {
+        const q = input.value.toLowerCase().trim();
+        cards.forEach(card => {
+          const title = card.querySelector(".title")?.innerText.toLowerCase() || "";
+          card.style.display = !q || title.includes(q) ? "" : "none";
+        });
+      });
+    });
+  </script>
+</body>
+</html>

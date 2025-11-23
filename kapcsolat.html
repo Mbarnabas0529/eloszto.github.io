@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="hu">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Elosztó – Kapcsolat</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <style>
+    :root{
+      --glass-light: rgba(255,255,255,0.45);
+      --glass-dark: rgba(0,0,0,0.25);
+      --border-glow: rgba(255,255,255,0.55);
+      --text: #ffffff;
+      --muted: #e6f5ff;
+      --accent1: #00c6ff;
+      --accent2: #1a75ff;
+      --accent3: #00ffcc;
+      --accent4: #f59e0b;
+    }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(1000px 600px at 10% 0%, var(--accent1), transparent 60%),
+        radial-gradient(800px 500px at 90% 10%, var(--accent3), transparent 55%),
+        radial-gradient(900px 600px at 30% 90%, var(--accent2), transparent 60%),
+        radial-gradient(700px 600px at 80% 85%, var(--accent4), transparent 60%),
+        linear-gradient(135deg, #0546b4 0%, #0a95ff 35%, #00d6ff 65%, #00ffc3 100%);
+    }
+    .gloss-overlay {
+      pointer-events: none;
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0) 40%, rgba(0,0,0,0.12) 60%, rgba(255,255,255,0.06));
+      mix-blend-mode: screen;
+      z-index: 1;
+    }
+    .wrap {
+      position: relative;
+      z-index: 2;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      min-height: 100vh;
+    }
+    header {
+      position: sticky;
+      top: 0;
+      backdrop-filter: blur(16px) saturate(120%);
+      background: linear-gradient(180deg, var(--glass-light), var(--glass-dark));
+      border-bottom: 2px solid var(--border-glow);
+      box-shadow: 0 10px 40px rgba(0,0,0,0.45);
+    }
+    .header-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 18px 24px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: var(--text);
+    }
+    .brand .orb {
+      width: 30px; height: 30px; border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, #fff, #78e7ff 35%, #2ea2ff 55%, #0069ff 85%);
+      box-shadow: inset 0 6px 12px rgba(255,255,255,0.6), 0 8px 20px rgba(0,0,0,0.5);
+    }
+    .brand .name { font-weight: 700; text-shadow: 0 2px 6px rgba(0,0,0,0.7); }
+    nav { margin-left: auto; display: flex; gap: 12px; }
+    nav a {
+      display: inline-flex; align-items: center; gap: 8px;
+      text-decoration: none; color: var(--text);
+      padding: 10px 18px; border-radius: 999px;
+      background: linear-gradient(180deg, #6af7e2, #1aa6ff);
+      box-shadow: inset 0 2px 8px rgba(255,255,255,0.85), 0 6px 16px rgba(0,0,0,0.5);
+      border: 1px solid rgba(255,255,255,0.6);
+      transition: transform .15s ease, box-shadow .15s ease;
+    }
+    nav a:hover { transform: scale(1.08); }
+    main {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 32px 24px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 20px;
+    }
+    .card {
+      padding: 18px;
+      border-radius: 18px;
+      background: linear-gradient(180deg, var(--glass-light), var(--glass-dark));
+      backdrop-filter: blur(18px) saturate(120%);
+      border: 2px solid var(--border-glow);
+      box-shadow: 0 12px 36px rgba(0,0,0,0.6);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .card label {
+      font-weight: 600;
+      text-shadow: 0 1px 4px rgba(0,0,0,0.6);
+    }
+    .card input, .card textarea {
+      padding: 10px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.7);
+      background: linear-gradient(180deg, #eaffff, #bfe9ff);
+      font-size: 14px;
+      color: #0a2540;
+      box-shadow: inset 0 2px 8px rgba(255,255,255,0.9), 0 6px 16px rgba(0,0,0,0.45);
+    }
+    button {
+      margin-top: 20px;
+      padding: 12px 20px;
+      border-radius: 999px;
+      background: linear-gradient(180deg, #6af7e2, #1aa6ff);
+      color: #07233a;
+      font-weight: 600;
+      border: 1px solid rgba(255,255,255,0.7);
+      box-shadow: inset 0 2px 8px rgba(255,255,255,0.85), 0 4px 10px rgba(0,0,0,0.4);
+      cursor: pointer;
+      transition: transform .15s ease;
+    }
+    button:hover { transform: scale(1.05); }
+    footer {
+      backdrop-filter: blur(16px);
+      background: linear-gradient(180deg, var(--glass-dark), rgba(0,0,0,0.35));
+      border-top: 2px solid var(--border-glow);
+      box-shadow: 0 -10px 32px rgba(0,0,0,0.5);
+      text-align: center;
+      padding: 18px 24px;
+      color: var(--muted);
+    }
+  </style>
+</head>
+<body>
+  <div class="gloss-overlay"></div>
+  <div class="wrap">
+    <header>
+      <div class="header-inner">
+        <a class="brand" href="index.html">
+          <span class="orb"></span>
+          <span class="name"><i class="fa-solid fa-star"></i> Elosztó</span>
+        </a>
+        <nav>
+          <a href="index.html"><i class="fa-solid fa-house"></i> Kezdőlap</a>
+          <a href="kapcsolat.html"><i class="fa-solid fa-envelope"></i> Kapcsolat</a>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <h1><i class="fa-solid fa-envelope"></i> Kapcsolat</h1>
+      <p>Az alábbiakon megtalálsz:</p>
+      <form class="grid">
+        <div class="card">
+          <label for="name"><i class="fa-brands fa-facebook"></i> Mitró Barnabás</label>
+          <label for="name"><i class="fa-brands fa-google"></i> barnabasmitro@gmail.com</label>
+</div>
+</form>
+</main>
+  </div>
+  </body>
+  </html>
