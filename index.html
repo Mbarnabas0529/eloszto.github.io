@@ -300,6 +300,58 @@
   filter: drop-shadow(0 2px 6px rgba(0,0,0,0.6));
   border-radius: 12px;
 }
+/*mobil */
+@media (max-width: 480px) {
+  /* Fejléc */
+  .header-inner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  nav {
+    flex-direction: column;
+    width: 100%;
+  }
+  nav a {
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* Kereső */
+  .search {
+    width: 100%;
+    justify-content: space-between;
+  }
+  .search input {
+    width: 100%;
+    font-size: 16px;
+  }
+
+  /* Hero szekció */
+  .hero {
+    grid-template-columns: 1fr; /* egymás alatt */
+  }
+  .panel h1 {
+    font-size: 22px;
+  }
+  .panel p {
+    font-size: 14px;
+  }
+
+  /* Grid kártyák */
+  .grid {
+    grid-template-columns: 1fr; /* egy oszlop */
+  }
+  .card .preview {
+    height: 180px; /* nagyobb kép mobilon */
+  }
+
+  /* Audio player */
+  .player audio {
+    width: 100%; /* teljes szélesség */
+  }
+}
 
   </style>
 </head>
